@@ -41,7 +41,7 @@ Dort `Interface Options` -> `I2C` aktivieren.
 
 ```bash
 sudo apt update
-sudo apt install -y python3-pip python3-venv
+sudo apt install -y python3-full python3-venv python3-dev build-essential swig
 python3 -m venv .venv
 . .venv/bin/activate
 pip install -r requirements.txt
@@ -109,7 +109,16 @@ Wenn `No module named 'RPLCD'` kommt, wurden die Python-Pakete noch nicht fuer
 genau diesen Python installiert. Im Projektordner:
 
 ```bash
-python3 -m pip install -r requirements.txt
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Wenn `lgpio` beim Installieren mit `error: command 'swig' failed` abbricht:
+
+```bash
+sudo apt install -y python3-dev build-essential swig
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
 ## DMX-Kanaele
