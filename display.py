@@ -17,6 +17,7 @@ class Display:
                 rows=4,
                 charmap="A02",
                 auto_linebreaks=False,
+                backlight_enabled=True,
             )
             self.available = True
         except Exception as exc:

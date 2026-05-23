@@ -62,6 +62,14 @@ i2cdetect -y 1
 
 Dann `LCD_I2C_ADDRESS` in `.env` anpassen, oft ist es `0x27` oder `0x3f`.
 
+Wenn das Display nur blau leuchtet, aber keine Schrift zeigt:
+
+- Am kleinen blauen Poti auf dem I2C-Adapter langsam drehen. Das ist der Kontrast.
+- `python3 test_display.py` starten. Der Test probiert `0x27` und `0x3f`.
+- Wenn der Test nichts findet: `i2cdetect -y 1` ausfuehren und die angezeigte Adresse in `.env` eintragen.
+- Wenn gar keine Adresse angezeigt wird: SDA/SCL, VCC/GND und aktiviertes I2C in `raspi-config` pruefen.
+- Wenn schwarze Kaestchen, aber keine Schrift erscheinen: Adresse oder Initialisierung stimmt noch nicht.
+
 ## DMX-Adapter
 
 Standard ist:
