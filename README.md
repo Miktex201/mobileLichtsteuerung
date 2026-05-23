@@ -2,6 +2,9 @@
 
 Kleine Raspberry-Pi-Steuerung fuer Buttons, 20x4-I2C-LCD und USB-DMX.
 
+## Token
+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
+
 ## Verkabelung
 
 ### Display 2004A mit I2C-Adapter
