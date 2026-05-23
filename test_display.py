@@ -35,14 +35,16 @@ def try_display(address: int) -> bool:
 
 
 def main() -> int:
-    for address in (0x27, 0x3F):
+    addresses = list(range(0x20, 0x28)) + list(range(0x38, 0x40))
+    for address in addresses:
         print(f"Teste LCD-Adresse 0x{address:02x} ...")
         if try_display(address):
             print(f"Display erfolgreich auf 0x{address:02x} angesprochen.")
             return 0
 
-    print("Kein Display auf 0x27 oder 0x3f erreicht.")
-    print("Pruefe: I2C aktiviert, SDA GPIO2, SCL GPIO3, VCC/GND, RPLCD installiert.")
+    print("Kein Display auf den typischen PCF8574-Adressen erreicht.")
+    print("Fuehre jetzt aus: i2cdetect -y 1")
+    print("Wenn dort keine Adresse erscheint: Verkabelung, VCC/GND oder I2C-Adapter pruefen.")
     return 1
 
 

@@ -41,7 +41,7 @@ Dort `Interface Options` -> `I2C` aktivieren.
 
 ```bash
 sudo apt update
-sudo apt install -y python3-full python3-venv python3-dev build-essential swig
+sudo apt install -y python3-full python3-venv python3-dev build-essential swig liblgpio-dev
 python3 -m venv .venv
 . .venv/bin/activate
 pip install -r requirements.txt
@@ -65,9 +65,10 @@ Dann `LCD_I2C_ADDRESS` in `.env` anpassen, oft ist es `0x27` oder `0x3f`.
 Wenn das Display nur blau leuchtet, aber keine Schrift zeigt:
 
 - Am kleinen blauen Poti auf dem I2C-Adapter langsam drehen. Das ist der Kontrast.
-- `python3 test_display.py` starten. Der Test probiert `0x27` und `0x3f`.
+- `python3 test_display.py` starten. Der Test probiert die typischen PCF8574-Adressen.
 - Wenn der Test nichts findet: `i2cdetect -y 1` ausfuehren und die angezeigte Adresse in `.env` eintragen.
 - Wenn gar keine Adresse angezeigt wird: SDA/SCL, VCC/GND und aktiviertes I2C in `raspi-config` pruefen.
+- GPIO2/SDA ist Pin 3 am Raspberry-Pi-Header, GPIO3/SCL ist Pin 5.
 - Wenn schwarze Kaestchen, aber keine Schrift erscheinen: Adresse oder Initialisierung stimmt noch nicht.
 
 ## DMX-Adapter
@@ -113,10 +114,11 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Wenn `lgpio` beim Installieren mit `error: command 'swig' failed` abbricht:
+Wenn `lgpio` beim Installieren mit `error: command 'swig' failed` oder
+`cannot find -llgpio` abbricht:
 
 ```bash
-sudo apt install -y python3-dev build-essential swig
+sudo apt install -y python3-dev build-essential swig liblgpio-dev
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
