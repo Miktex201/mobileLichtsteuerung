@@ -87,9 +87,14 @@ def clamp_channels(channels: list[int], size: int) -> list[int]:
 def make_dmx_output(config: DmxConfig) -> DmxOutput:
     if config.backend == "log":
         return LogDmxOutput()
-    if config.backend == "open_dmx":
-        return OpenDmxOutput(config.port)
-    if config.backend == "enttec_pro":
-        return EnttecProDmxOutput(config.port)
+    try:
+        if config.backend == "open_dmx":
+            return OpenDmxOutput(config.port)
+        if config.backend == "enttec_pro":
+            return EnttecProDmxOutput(config.port)
+    except Exception as exc:
+        print(f"DMX-Adapter nicht verfuegbar ({config.port}): {exc}")
+        print("Starte ohne echten DMX-Ausgang. Setze DMX_BACKEND=log zum Testen.")
+        return LogDmxOutput()
 
     raise ValueError(f"Unbekannter DMX_BACKEND: {config.backend}")

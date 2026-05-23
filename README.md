@@ -2,9 +2,6 @@
 
 Kleine Raspberry-Pi-Steuerung fuer Buttons, 20x4-I2C-LCD und USB-DMX.
 
-## Token
-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
-
 ## Verkabelung
 
 ### Display 2004A mit I2C-Adapter
@@ -74,6 +71,20 @@ DMX_PORT=/dev/ttyUSB0
 DMX_BACKEND=enttec_pro
 ```
 
+Wenn beim Start `could not open port /dev/ttyUSB0` kommt, ist der Adapter nicht
+eingesteckt, wurde nicht erkannt oder heisst anders. Pruefe ihn auf dem Pi mit:
+
+```bash
+ls /dev/ttyUSB*
+ls /dev/serial/by-id/
+```
+
+Wenn z.B. `/dev/ttyUSB1` angezeigt wird, trage in `.env` ein:
+
+```env
+DMX_PORT=/dev/ttyUSB1
+```
+
 Falls du einen einfachen Open-DMX/FTDI-Adapter hast:
 
 ```env
@@ -84,6 +95,13 @@ Zum Testen ohne echten DMX-Adapter:
 
 ```env
 DMX_BACKEND=log
+```
+
+Wenn `No module named 'RPLCD'` kommt, wurden die Python-Pakete noch nicht fuer
+genau diesen Python installiert. Im Projektordner:
+
+```bash
+python3 -m pip install -r requirements.txt
 ```
 
 ## DMX-Kanaele
