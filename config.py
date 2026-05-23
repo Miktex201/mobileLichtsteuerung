@@ -18,6 +18,7 @@ BUTTON_PINS = {
 class DisplayConfig:
     i2c_address: int
     i2c_expander: str
+    i2c_port: int
 
 
 @dataclass(frozen=True)
@@ -42,6 +43,7 @@ def load_config() -> AppConfig:
         display=DisplayConfig(
             i2c_address=int(os.getenv("LCD_I2C_ADDRESS", "0x27"), 0),
             i2c_expander=os.getenv("LCD_I2C_EXPANDER", "PCF8574"),
+            i2c_port=int(os.getenv("LCD_I2C_PORT", "1")),
         ),
         dmx=DmxConfig(
             backend=os.getenv("DMX_BACKEND", "enttec_pro").lower(),

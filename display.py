@@ -12,7 +12,7 @@ class Display:
             self.lcd = CharLCD(
                 i2c_expander=config.i2c_expander,
                 address=config.i2c_address,
-                port=1,
+                port=config.i2c_port,
                 cols=20,
                 rows=4,
                 charmap="A02",

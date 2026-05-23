@@ -61,6 +61,11 @@ i2cdetect -y 1
 ```
 
 Dann `LCD_I2C_ADDRESS` in `.env` anpassen, oft ist es `0x27` oder `0x3f`.
+Der normale Raspberry-Pi-I2C-Port fuer GPIO2/GPIO3 ist:
+
+```env
+LCD_I2C_PORT=1
+```
 
 Wenn das Display nur blau leuchtet, aber keine Schrift zeigt:
 
@@ -69,6 +74,7 @@ Wenn das Display nur blau leuchtet, aber keine Schrift zeigt:
 - Wenn der Test nichts findet: `i2cdetect -y 1` ausfuehren und die angezeigte Adresse in `.env` eintragen.
 - Wenn gar keine Adresse angezeigt wird: SDA/SCL, VCC/GND und aktiviertes I2C in `raspi-config` pruefen.
 - GPIO2/SDA ist Pin 3 am Raspberry-Pi-Header, GPIO3/SCL ist Pin 5.
+- GPIO0/GPIO1 waeren Bus 0, also `/dev/i2c-0`. Den nur testen, wenn das Display wirklich dort angeschlossen ist.
 - Wenn schwarze Kaestchen, aber keine Schrift erscheinen: Adresse oder Initialisierung stimmt noch nicht.
 
 ## DMX-Adapter
