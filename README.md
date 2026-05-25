@@ -159,15 +159,34 @@ pip install -r requirements.txt
 
 ## DMX-Kanaele
 
-Die Beispielbelegung ist fuer einfache RGB-Scheinwerfer:
+Die Aussenlampen sind als 7-Kanal-Scheinwerfer angelegt. Startadressen:
 
-- Kanal 1: Master-Dimmer
-- Kanal 2: Rot
-- Kanal 3: Gruen
-- Kanal 4: Blau
-- Kanal 5: Strobe/Flash
+- Lampe 1: DMX 1
+- Lampe 2: DMX 9
+- Lampe 3: DMX 17
+- Lampe 4: DMX 25
 
-Du kannst die Kanaele in `.env` aendern.
+In `.env` steht dafuer:
+
+```env
+DMX_OUTSIDE_FIXTURES=1,9,17,25
+DMX_INSIDE_FIXTURES=
+```
+
+Die Kanalbelegung pro Lampe:
+
+- CH1: Master-Helligkeit
+- CH2: Rot
+- CH3: Gruen
+- CH4: Blau
+- CH5: Strobe/Flash, 0-7 aus, 8-255 schnell
+- CH6: Effektmodus, im Programm auf manuell
+- CH7: Effektgeschwindigkeit/Farbauswahl, im Programm aktuell aus
+
+Der Automatikmodus laesst die vier Aussenlampen von links nach rechts, von rechts
+nach links, die linken zwei, die rechten zwei und alle zusammen blinken. Der
+Farbwechselmodus faehrt die RGB-Werte langsam und smooth durch. Die Geschwindigkeit
+wird in beiden Modi ueber den Drehgeber gesteuert.
 
 ## Programmstruktur
 

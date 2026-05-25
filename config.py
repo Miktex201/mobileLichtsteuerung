@@ -32,6 +32,8 @@ class DisplayConfig:
 class DmxConfig:
     backend: str
     port: str
+    outside_fixture_starts: tuple[int, ...]
+    inside_fixture_starts: tuple[int, ...]
     master_channel: int
     red_channel: int
     green_channel: int
@@ -55,6 +57,8 @@ def load_config() -> AppConfig:
         dmx=DmxConfig(
             backend=os.getenv("DMX_BACKEND", "enttec_pro").lower(),
             port=os.getenv("DMX_PORT", "/dev/ttyUSB0"),
+            outside_fixture_starts=read_dmx_channel_list("DMX_OUTSIDE_FIXTURES", "1,9,17,25"),
+            inside_fixture_starts=read_dmx_channel_list("DMX_INSIDE_FIXTURES", ""),
             master_channel=read_dmx_channel("DMX_CHANNEL_MASTER", 1),
             red_channel=read_dmx_channel("DMX_CHANNEL_RED", 2),
             green_channel=read_dmx_channel("DMX_CHANNEL_GREEN", 3),
@@ -69,3 +73,15 @@ def read_dmx_channel(env_name: str, default_channel: int) -> int:
     if channel < 1 or channel > 512:
         raise ValueError(f"{env_name} muss zwischen 1 und 512 liegen")
     return channel
+
+
+def read_dmx_channel_list(env_name: str, default_value: str) -> tuple[int, ...]:
+    raw_value = os.getenv(env_name, default_value).strip()
+    if not raw_value:
+        return ()
+
+    channels = tuple(int(part.strip()) for part in raw_value.split(",") if part.strip())
+    for channel in channels:
+        if channel < 1 or channel > 506:
+            raise ValueError(f"{env_name} enthaelt ungueltigen Startkanal {channel}")
+    return channels
