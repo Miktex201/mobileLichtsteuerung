@@ -111,7 +111,7 @@ Standard ist:
 
 ```env
 DMX_PORT=/dev/ttyUSB0
-DMX_BACKEND=enttec_pro
+DMX_BACKEND=serial
 ```
 
 Wenn beim Start `could not open port /dev/ttyUSB0` kommt, ist der Adapter nicht
@@ -128,10 +128,18 @@ Wenn z.B. `/dev/ttyUSB1` angezeigt wird, trage in `.env` ein:
 DMX_PORT=/dev/ttyUSB1
 ```
 
-Falls du einen einfachen Open-DMX/FTDI-Adapter hast:
+Fuer deinen USB-zu-DMX-Seriell-Wandler nutzt das Programm den Raw-Serial-DMX-Treiber:
 
 ```env
-DMX_BACKEND=open_dmx
+DMX_BACKEND=serial
+```
+
+`open_dmx` und `raw_serial` funktionieren als Alias ebenfalls.
+
+Falls du spaeter einen ENTTEC DMX USB Pro kompatiblen Adapter nutzt:
+
+```env
+DMX_BACKEND=enttec_pro
 ```
 
 Zum Testen ohne echten DMX-Adapter:
@@ -199,7 +207,7 @@ auf 85, CH7 bekommt die Geschwindigkeit vom Drehgeber, CH5/Strobe bleibt 0.
 - `display.py`: Ausgabe auf dem 20x4-I2C-LCD
 - `state.py`: aktueller Zustand wie Modus, Speed, Flash und An/Aus
 - `lighting.py`: erzeugt aus dem Zustand die 512 DMX-Kanalwerte
-- `dmx_output.py`: USB-DMX-Ausgabe, aktuell `enttec_pro`, `open_dmx` oder `log`
+- `dmx_output.py`: USB-DMX-Ausgabe, aktuell `serial`, `enttec_pro`, `open_dmx` oder `log`
 
 Wenn spaeter mehrere Scheinwerfer oder feste Szenen dazukommen, ist `lighting.py`
 der richtige Ort fuer die Logik. Wenn der konkrete USB-DMX-Wandler ein anderes

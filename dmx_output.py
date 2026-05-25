@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+import threading
 import time
 
 from config import DmxConfig
@@ -48,35 +50,80 @@ class EnttecProDmxOutput(DmxOutput):
         self.serial.close()
 
 
-class OpenDmxOutput(DmxOutput):
-    """Simple FTDI/Open DMX style output."""
+class SerialDmxOutput(DmxOutput):
+    """Raw serial DMX output with a steady background send loop."""
 
-    def __init__(self, port: str) -> None:
+    def __init__(self, port: str, channels: int = 512, fps: int = 44, enabled: bool | None = None) -> None:
+        self.port = port
+        self.channels = channels
+        self.fps = max(1, min(44, int(fps)))
+        self.frame_time = 1 / self.fps
+        self.data = bytearray([0] * channels)
+        self.lock = threading.Lock()
+        self.serial = None
+        self.thread: threading.Thread | None = None
+        self.running = False
+
+        if enabled is None:
+            enabled = os.path.exists(port)
+        self.enabled = enabled
+
+        self.start()
+
+    def start(self) -> None:
+        if not self.enabled:
+            print(f"DMX ist deaktiviert, {self.port} existiert nicht.")
+            return
+
         import serial
 
-        self.serial = serial.Serial(
-            port=port,
-            baudrate=250000,
-            bytesize=serial.EIGHTBITS,
-            parity=serial.PARITY_NONE,
-            stopbits=serial.STOPBITS_TWO,
-            timeout=0.05,
-        )
+        try:
+            self.serial = serial.Serial(
+                port=self.port,
+                baudrate=250000,
+                bytesize=8,
+                parity=serial.PARITY_NONE,
+                stopbits=2,
+            )
+        except Exception as exc:
+            self.enabled = False
+            print(f"DMX konnte nicht gestartet werden: {exc}")
+            return
+
+        self.running = True
+        self.thread = threading.Thread(target=self._send_loop, daemon=True)
+        self.thread.start()
+        print(f"DMX-Ausgabe gestartet auf {self.port} mit {self.fps} FPS")
 
     def send(self, channels: list[int]) -> None:
-        data = bytes([0] + clamp_channels(channels, 512))
-        try:
-            self.serial.break_condition = True
-            time.sleep(0.00012)
-            self.serial.break_condition = False
-            time.sleep(0.000012)
-            self.serial.write(data)
-        except OSError:
-            self.serial.close()
-            raise
+        with self.lock:
+            self.data = bytearray(clamp_channels(channels, self.channels))
 
     def close(self) -> None:
-        self.serial.close()
+        self.running = False
+        if self.thread:
+            self.thread.join(timeout=1)
+        if self.serial:
+            self.serial.close()
+
+    def _send_loop(self) -> None:
+        while self.running:
+            self.send_frame()
+            time.sleep(self.frame_time)
+
+    def send_frame(self) -> None:
+        if not self.serial:
+            return
+
+        with self.lock:
+            frame = bytes([0]) + bytes(self.data)
+
+        self.serial.break_condition = True
+        time.sleep(0.0001)
+        self.serial.break_condition = False
+        time.sleep(0.000012)
+        self.serial.write(frame)
+        self.serial.flush()
 
 
 def clamp_channels(channels: list[int], size: int) -> list[int]:
@@ -88,8 +135,8 @@ def make_dmx_output(config: DmxConfig) -> DmxOutput:
     if config.backend == "log":
         return LogDmxOutput()
     try:
-        if config.backend == "open_dmx":
-            return OpenDmxOutput(config.port)
+        if config.backend in ("open_dmx", "serial", "raw_serial"):
+            return SerialDmxOutput(config.port)
         if config.backend == "enttec_pro":
             return EnttecProDmxOutput(config.port)
     except Exception as exc:
