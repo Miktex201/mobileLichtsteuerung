@@ -148,6 +148,17 @@ Zum Testen ohne echten DMX-Adapter:
 DMX_BACKEND=log
 ```
 
+Zum Pruefen der DMX-Startadressen:
+
+```bash
+source .venv/bin/activate
+python test_dmx_fixtures.py
+```
+
+Der Test schaltet erst alle Aussenlampen weiss und danach Lampe 1 bis 4 einzeln.
+Wenn nur Lampe 1 reagiert, stimmen wahrscheinlich die DMX-Adressen an Lampe 2-4
+oder deren DMX-Modus nicht.
+
 Wenn `No module named 'RPLCD'` kommt, wurden die Python-Pakete noch nicht fuer
 genau diesen Python installiert. Im Projektordner:
 
