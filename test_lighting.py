@@ -25,9 +25,22 @@ def test_color_change_all_outside_fixtures_are_on() -> None:
 
     for start_channel in (1, 9, 17, 25):
         assert frame[start_channel - 1] == 255
-        assert any(frame[start_channel + offset - 1] > 0 for offset in (1, 2, 3))
+        assert frame[start_channel + 1 - 1] == 0
+        assert frame[start_channel + 2 - 1] == 0
+        assert frame[start_channel + 3 - 1] == 0
+        assert frame[start_channel + 4 - 1] == 0
+        assert frame[start_channel + 5 - 1] == 85
+        assert frame[start_channel + 6 - 1] == 127
+
+
+def test_auto_mode_uses_manual_rgb_without_strobe() -> None:
+    state = State(powered=True, mode=Mode.AUTO, zone=Zone.OUTSIDE, speed=5)
+    frame = build_dmx_frame(state, make_test_config(), started_at=0)
+
+    for start_channel in (1, 9, 17, 25):
         assert frame[start_channel + 4 - 1] == 0
         assert frame[start_channel + 5 - 1] == 0
+        assert frame[start_channel + 6 - 1] == 0
 
 
 def test_inside_without_addresses_falls_back_to_outside_fixtures() -> None:

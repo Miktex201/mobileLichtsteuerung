@@ -184,9 +184,11 @@ Die Kanalbelegung pro Lampe:
 - CH7: Effektgeschwindigkeit/Farbauswahl, im Programm aktuell aus
 
 Der Automatikmodus laesst die vier Aussenlampen von links nach rechts, von rechts
-nach links, die linken zwei, die rechten zwei und alle zusammen blinken. Der
-Farbwechselmodus faehrt die RGB-Werte langsam und smooth durch. Die Geschwindigkeit
-wird in beiden Modi ueber den Drehgeber gesteuert.
+nach links, die linken zwei, die rechten zwei und alle zusammen blinken. Dabei ist
+CH6 auf manuell, CH5/Strobe bleibt 0 und die Farben kommen ueber CH2-CH4.
+
+Der Farbwechselmodus nutzt den eingebauten Farbverlauf der Scheinwerfer: CH6 steht
+auf 85, CH7 bekommt die Geschwindigkeit vom Drehgeber, CH5/Strobe bleibt 0.
 
 ## Programmstruktur
 

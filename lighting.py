@@ -40,13 +40,12 @@ def get_fixture_starts(state: State, config: DmxConfig) -> tuple[int, ...]:
 
 
 def build_color_change_values(state: State, elapsed: float, fixture_count: int) -> list[FixtureValues]:
-    speed_factor = 0.008 + state.speed * 0.018
-    values = []
-    for index in range(fixture_count):
-        phase = index / max(1, fixture_count)
-        red, green, blue = color_wheel(elapsed * speed_factor + phase)
-        values.append(make_fixture(red, green, blue, master=255, strobe=0, mode=0, speed=0))
-    return values
+    _ = elapsed
+    speed = dmx_effect_speed(state.speed)
+    return [
+        make_fixture(0, 0, 0, master=255, strobe=0, mode=85, speed=speed)
+        for _index in range(fixture_count)
+    ]
 
 
 def build_auto_values(state: State, elapsed: float, fixture_count: int) -> list[FixtureValues]:
@@ -61,9 +60,9 @@ def build_auto_values(state: State, elapsed: float, fixture_count: int) -> list[
     values = []
     for index in range(fixture_count):
         if index in pattern:
-            values.append(make_fixture(red, green, blue, master=255))
+            values.append(make_fixture(red, green, blue, master=255, strobe=0, mode=0, speed=0))
         else:
-            values.append(make_fixture(0, 0, 0, master=0))
+            values.append(make_fixture(0, 0, 0, master=0, strobe=0, mode=0, speed=0))
     return values
 
 
@@ -130,3 +129,7 @@ def set_channel(channels: list[int], channel: int, value: int) -> None:
 
 def clamp(value: int) -> int:
     return max(0, min(255, int(value)))
+
+
+def dmx_effect_speed(speed: int) -> int:
+    return max(1, min(255, int(speed * 25.5)))
