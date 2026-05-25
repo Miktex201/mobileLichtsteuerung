@@ -8,7 +8,7 @@ from state import Mode, State, Zone
 
 
 ParFixtureValues = tuple[int, int, int, int, int, int, int]
-LightbarValues = tuple[int, int, int, int, int, int, int, int]
+LightbarValues = tuple[int, int, int, int, int, int, int]
 DmxElement = tuple[str, int]
 
 
@@ -64,7 +64,7 @@ def apply_color_change_scene(
     elapsed: float,
     elements: list[DmxElement],
 ) -> None:
-    speed_factor = 0.003 + state.speed * 0.006
+    speed_factor = 0.005 + ((state.speed / 10) ** 1.7) * 0.10
     for index, (kind, start) in enumerate(elements):
         phase = index / max(1, len(elements)) * 0.35
         red, green, blue = color_wheel(elapsed * speed_factor + phase)
@@ -170,18 +170,16 @@ def make_lightbar(
     dimmer: int = 255,
     program: int = 0,
     speed: int = 0,
-    fade: int = 0,
     flash: int = 0,
 ) -> LightbarValues:
     return (
-        clamp(dimmer),
         clamp(red),
         clamp(green),
         clamp(blue),
         clamp(program),
         clamp(speed),
-        clamp(fade),
         clamp(flash),
+        clamp(dimmer),
     )
 
 

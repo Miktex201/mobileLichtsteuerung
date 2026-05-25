@@ -31,12 +31,11 @@ def test_color_change_all_outside_fixtures_are_on() -> None:
         assert frame[start_channel + 5 - 1] == 0
         assert frame[start_channel + 6 - 1] == 0
 
-    assert frame[17 - 1] == 255
-    assert any(frame[17 + offset - 1] > 0 for offset in (1, 2, 3))
+    assert any(frame[17 + offset - 1] > 0 for offset in (0, 1, 2))
+    assert frame[17 + 3 - 1] == 0
     assert frame[17 + 4 - 1] == 0
     assert frame[17 + 5 - 1] == 0
-    assert frame[17 + 6 - 1] == 0
-    assert frame[17 + 7 - 1] == 0
+    assert frame[17 + 6 - 1] == 255
 
 
 def test_auto_mode_uses_manual_rgb_without_strobe() -> None:
@@ -48,10 +47,10 @@ def test_auto_mode_uses_manual_rgb_without_strobe() -> None:
         assert frame[start_channel + 5 - 1] == 0
         assert frame[start_channel + 6 - 1] == 0
 
+    assert frame[17 + 3 - 1] == 0
     assert frame[17 + 4 - 1] == 0
     assert frame[17 + 5 - 1] == 0
-    assert frame[17 + 6 - 1] == 0
-    assert frame[17 + 7 - 1] == 0
+    assert frame[17 + 6 - 1] in (0, 255)
 
 
 def test_inside_without_addresses_falls_back_to_outside_fixtures() -> None:
@@ -60,6 +59,6 @@ def test_inside_without_addresses_falls_back_to_outside_fixtures() -> None:
 
     assert frame[0] == 255
     assert frame[8] == 255
-    assert frame[16] == 255
+    assert frame[22] == 255
     assert frame[24] == 255
     assert frame[32] == 255

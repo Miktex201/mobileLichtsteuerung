@@ -179,7 +179,7 @@ pip install -r requirements.txt
 ## DMX-Kanaele
 
 Die Aussenlampen sind als 7-Kanal-Scheinwerfer angelegt. Zwischen Lampe 2 und
-Lampe 3 sitzt eine 8-Kanal-Lightbar.
+Lampe 3 sitzt eine 7-Kanal-Lightbar.
 
 - Lampe 1: DMX 1
 - Lampe 2: DMX 9
@@ -205,16 +205,15 @@ Die Kanalbelegung pro 7-Kanal-Lampe:
 - CH6: Effektmodus, im Programm auf manuell
 - CH7: Effektgeschwindigkeit/Farbauswahl, im Programm aktuell aus
 
-Die Kanalbelegung der 8-Kanal-Lightbar:
+Die Kanalbelegung der 7-Kanal-Lightbar:
 
-- CH1: Master-Helligkeit
-- CH2: Rot
-- CH3: Gruen
-- CH4: Blau
-- CH5: Programm, im Programm auf manuell
-- CH6: Geschwindigkeit, im manuellen Modus 0
-- CH7: Fade, im manuellen Modus 0
-- CH8: Flash/Strobe, im normalen Betrieb 0
+- CH1: Rot
+- CH2: Gruen
+- CH3: Blau
+- CH4: Programm/Funktion, im Programm auf aus/manuell
+- CH5: Geschwindigkeit, im manuellen Modus 0
+- CH6: Flash/Strobe, im normalen Betrieb 0
+- CH7: Master-Helligkeit
 
 Der Automatikmodus laesst die Aussen-Geraete von links nach rechts, von rechts
 nach links, die linken zwei, die rechten zwei, Wechselmuster und kurze Alle-Blitze
