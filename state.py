@@ -16,8 +16,8 @@ class Zone(Enum):
 
 @dataclass
 class State:
-    powered: bool = True
-    mode: Mode = Mode.AUTO
+    powered: bool = False
+    mode: Mode = Mode.COLOR_CHANGE
     zone: Zone = Zone.OUTSIDE
     speed: int = 5
     flash: bool = False
