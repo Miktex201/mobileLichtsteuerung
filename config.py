@@ -14,6 +14,13 @@ BUTTON_PINS = {
 }
 
 
+ROTARY_PINS = {
+    "button": 4,   # Lila, Drehgeber-Druckknopf
+    "a": 5,        # Grau
+    "b": 6,        # Schwarz
+}
+
+
 @dataclass(frozen=True)
 class DisplayConfig:
     i2c_address: int

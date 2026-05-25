@@ -9,9 +9,15 @@ class Mode(Enum):
     AUTO = "Automatik"
 
 
+class Zone(Enum):
+    OUTSIDE = "Buehne aussen"
+    INSIDE = "Buehne innen"
+
+
 @dataclass
 class State:
     powered: bool = True
     mode: Mode = Mode.AUTO
+    zone: Zone = Zone.OUTSIDE
     speed: int = 5
     flash: bool = False

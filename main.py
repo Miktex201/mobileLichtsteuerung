@@ -7,11 +7,12 @@ import time
 from dotenv import load_dotenv
 
 from buttons import bind_button
-from config import BUTTON_PINS, load_config
+from config import BUTTON_PINS, ROTARY_PINS, load_config
 from display import Display
 from dmx_output import make_dmx_output
 from lighting import build_dmx_frame
-from state import Mode, State
+from rotary_encoder import bind_rotary_button, bind_rotary_encoder
+from state import Mode, State, Zone
 
 
 def main() -> int:
@@ -55,6 +56,10 @@ def main() -> int:
             state.powered = True
         refresh_display()
 
+    def toggle_zone() -> None:
+        state.zone = Zone.INSIDE if state.zone == Zone.OUTSIDE else Zone.OUTSIDE
+        refresh_display()
+
     def stop(_signum: int, _frame: object) -> None:
         nonlocal running
         running = False
@@ -69,6 +74,13 @@ def main() -> int:
         bind_button(BUTTON_PINS["auto_mode"], auto_mode),
         bind_button(BUTTON_PINS["power"], power),
         bind_button(BUTTON_PINS["flash"], flash),
+        bind_rotary_button(ROTARY_PINS["button"], toggle_zone),
+        bind_rotary_encoder(
+            ROTARY_PINS["a"],
+            ROTARY_PINS["b"],
+            clockwise=speed_up,
+            counter_clockwise=speed_down,
+        ),
     ]
 
     refresh_display()

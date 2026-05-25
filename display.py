@@ -26,11 +26,12 @@ class Display:
             print(f"Display nicht verfuegbar: {exc}")
 
     def show(self, state: State) -> None:
+        bar = self._speed_bar(state.speed)
         lines = [
-            "Bauwagen Licht",
+            state.zone.value,
             f"Status: {'AN' if state.powered else 'AUS'}",
-            f"Modus : {state.mode.value}",
-            f"Speed : {state.speed}/10" + (" FLASH" if state.flash else ""),
+            "Flash aktiv" if state.flash else f"Modus : {state.mode.value}",
+            bar,
         ]
         if not self.available:
             print(" | ".join(lines))
@@ -46,3 +47,8 @@ class Display:
         if self.available and self.lcd is not None:
             self.lcd.clear()
             self.lcd.close(clear=True)
+
+    @staticmethod
+    def _speed_bar(speed: int) -> str:
+        filled = max(0, min(20, speed * 2))
+        return "#" * filled + "-" * (20 - filled)

@@ -22,10 +22,22 @@ Die Buttons werden gegen 3,3 V geschaltet. Im Programm sind interne Pull-Downs a
 - Lila: Button 2 an GPIO24
 - Rot: Button 1 an GPIO25
 
+### Drehgeber
+
+Der Drehgeber wird gegen GND geschaltet. Im Programm sind interne Pull-Ups aktiv.
+
+- Blau: GND fuer Pull-Up
+- Weiss: GND
+- Lila: Druckknopf an GPIO4
+- Grau: Drehgeber A an GPIO5
+- Schwarz: Drehgeber B an GPIO6
+
 ## Bedienung
 
-- Button 1: Geschwindigkeit hoeher
-- Button 2: Geschwindigkeit niedriger
+- Drehgeber drehen: Geschwindigkeit hoeher/niedriger
+- Drehgeber druecken: Umschalten zwischen Buehne aussen und Buehne innen
+- Button 1: Geschwindigkeit hoeher als Backup
+- Button 2: Geschwindigkeit niedriger als Backup
 - Button 3: Farbwechselmodus
 - Button 4: Automatikmodus
 - Button 5: Licht an/aus
@@ -76,6 +88,22 @@ Wenn das Display nur blau leuchtet, aber keine Schrift zeigt:
 - GPIO2/SDA ist Pin 3 am Raspberry-Pi-Header, GPIO3/SCL ist Pin 5.
 - GPIO0/GPIO1 waeren Bus 0, also `/dev/i2c-0`. Den nur testen, wenn das Display wirklich dort angeschlossen ist.
 - Wenn schwarze Kaestchen, aber keine Schrift erscheinen: Adresse oder Initialisierung stimmt noch nicht.
+
+Eine komplett leere `i2cdetect -y 1`-Tabelle bedeutet: Der Raspberry Pi sieht
+elektrisch kein I2C-Geraet. Dann liegt es nicht am Python-Code. Pruefe in dieser
+Reihenfolge:
+
+- SDA wirklich an GPIO2 / physischer Pin 3
+- SCL wirklich an GPIO3 / physischer Pin 5
+- GND vom Display mit GND vom Raspberry Pi verbunden
+- VCC passend angeschlossen
+- I2C in `raspi-config` aktiviert und Pi danach neu gestartet
+- I2C-Adapter hinten am Display fest verloetet oder sauber gesteckt
+
+Viele LCD-I2C-Backpacks haben Pullups an VCC. Wenn das Modul mit 5 V versorgt
+wird, koennen SDA/SCL ebenfalls auf 5 V gezogen werden. Fuer den Raspberry Pi ist
+das unschoen; sauber ist 3,3 V-Versorgung, wenn das Display damit funktioniert,
+oder ein I2C-Level-Shifter bei 5 V-Versorgung.
 
 ## DMX-Adapter
 
@@ -146,6 +174,7 @@ Du kannst die Kanaele in `.env` aendern.
 - `main.py`: startet alles und verbindet Buttons, Display und DMX-Ausgabe
 - `config.py`: GPIO-Pins und Einstellungen aus `.env`
 - `buttons.py`: Button-Anbindung ueber `gpiozero`
+- `rotary_encoder.py`: Drehgeber und Drehgeber-Druckknopf
 - `display.py`: Ausgabe auf dem 20x4-I2C-LCD
 - `state.py`: aktueller Zustand wie Modus, Speed, Flash und An/Aus
 - `lighting.py`: erzeugt aus dem Zustand die 512 DMX-Kanalwerte
