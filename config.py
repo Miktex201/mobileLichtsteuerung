@@ -33,6 +33,7 @@ class DmxConfig:
     backend: str
     port: str
     outside_fixture_starts: tuple[int, ...]
+    outside_lightbar_starts: tuple[int, ...]
     inside_fixture_starts: tuple[int, ...]
     master_channel: int
     red_channel: int
@@ -57,7 +58,8 @@ def load_config() -> AppConfig:
         dmx=DmxConfig(
             backend=os.getenv("DMX_BACKEND", "serial").lower(),
             port=os.getenv("DMX_PORT", "/dev/ttyUSB0"),
-            outside_fixture_starts=read_dmx_channel_list("DMX_OUTSIDE_FIXTURES", "1,9,17,25"),
+            outside_fixture_starts=read_dmx_channel_list("DMX_OUTSIDE_PAR_FIXTURES", "1,9,25,33"),
+            outside_lightbar_starts=read_dmx_channel_list("DMX_OUTSIDE_LIGHTBARS", "17"),
             inside_fixture_starts=read_dmx_channel_list("DMX_INSIDE_FIXTURES", ""),
             master_channel=read_dmx_channel("DMX_CHANNEL_MASTER", 1),
             red_channel=read_dmx_channel("DMX_CHANNEL_RED", 2),

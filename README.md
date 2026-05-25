@@ -155,8 +155,8 @@ source .venv/bin/activate
 python test_dmx_fixtures.py
 ```
 
-Der Test schaltet erst alle Aussenlampen weiss und danach Lampe 1 bis 4 einzeln.
-Wenn nur Lampe 1 reagiert, stimmen wahrscheinlich die DMX-Adressen an Lampe 2-4
+Der Test schaltet erst alle Aussen-Geraete weiss und danach jedes Element einzeln.
+Wenn nur Lampe 1 reagiert, stimmen wahrscheinlich die DMX-Adressen an den anderen Geraeten
 oder deren DMX-Modus nicht.
 
 Wenn `No module named 'RPLCD'` kommt, wurden die Python-Pakete noch nicht fuer
@@ -178,21 +178,24 @@ pip install -r requirements.txt
 
 ## DMX-Kanaele
 
-Die Aussenlampen sind als 7-Kanal-Scheinwerfer angelegt. Startadressen:
+Die Aussenlampen sind als 7-Kanal-Scheinwerfer angelegt. Zwischen Lampe 2 und
+Lampe 3 sitzt eine 8-Kanal-Lightbar.
 
 - Lampe 1: DMX 1
 - Lampe 2: DMX 9
-- Lampe 3: DMX 17
-- Lampe 4: DMX 25
+- Lightbar: DMX 17
+- Lampe 3: DMX 25
+- Lampe 4: DMX 33
 
 In `.env` steht dafuer:
 
 ```env
-DMX_OUTSIDE_FIXTURES=1,9,17,25
+DMX_OUTSIDE_PAR_FIXTURES=1,9,25,33
+DMX_OUTSIDE_LIGHTBARS=17
 DMX_INSIDE_FIXTURES=
 ```
 
-Die Kanalbelegung pro Lampe:
+Die Kanalbelegung pro 7-Kanal-Lampe:
 
 - CH1: Master-Helligkeit
 - CH2: Rot
@@ -202,12 +205,23 @@ Die Kanalbelegung pro Lampe:
 - CH6: Effektmodus, im Programm auf manuell
 - CH7: Effektgeschwindigkeit/Farbauswahl, im Programm aktuell aus
 
-Der Automatikmodus laesst die vier Aussenlampen von links nach rechts, von rechts
-nach links, die linken zwei, die rechten zwei und alle zusammen blinken. Dabei ist
-CH6 auf manuell, CH5/Strobe bleibt 0 und die Farben kommen ueber CH2-CH4.
+Die Kanalbelegung der 8-Kanal-Lightbar:
 
-Der Farbwechselmodus nutzt den eingebauten Farbverlauf der Scheinwerfer: CH6 steht
-auf 85, CH7 bekommt die Geschwindigkeit vom Drehgeber, CH5/Strobe bleibt 0.
+- CH1: Master-Helligkeit
+- CH2: Rot
+- CH3: Gruen
+- CH4: Blau
+- CH5: Programm, im Programm auf manuell
+- CH6: Geschwindigkeit, im manuellen Modus 0
+- CH7: Fade, im manuellen Modus 0
+- CH8: Flash/Strobe, im normalen Betrieb 0
+
+Der Automatikmodus laesst die Aussen-Geraete von links nach rechts, von rechts
+nach links, die linken zwei, die rechten zwei, Wechselmuster und kurze Alle-Blitze
+laufen. Dabei bleiben Strobe/Flash-Kanaele 0, ausser wenn der Flash-Knopf aktiv ist.
+
+Der Farbwechselmodus ist selbst programmiert und faehrt langsam und smooth RGB-Werte
+ueber alle Aussen-Geraete. Die Geschwindigkeit kommt vom Drehgeber.
 
 ## Programmstruktur
 

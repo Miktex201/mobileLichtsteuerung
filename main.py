@@ -24,7 +24,8 @@ def main() -> int:
     dmx = make_dmx_output(config.dmx)
     print(f"DMX backend: {config.dmx.backend}")
     print(f"DMX port: {config.dmx.port}")
-    print(f"DMX aussen fixtures: {config.dmx.outside_fixture_starts}")
+    print(f"DMX aussen PAR fixtures: {config.dmx.outside_fixture_starts}")
+    print(f"DMX aussen Lightbars: {config.dmx.outside_lightbar_starts}")
     print(f"DMX innen fixtures: {config.dmx.inside_fixture_starts or 'Fallback auf aussen'}")
     started_at = time.monotonic()
     running = True
