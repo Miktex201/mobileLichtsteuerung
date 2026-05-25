@@ -22,6 +22,14 @@ Die Buttons werden gegen 3,3 V geschaltet. Im Programm sind interne Pull-Downs a
 - Lila: Button 2 an GPIO24
 - Rot: Button 1 an GPIO25
 
+### Drehgeber
+- Blau: Ground für Pull-Uo
+- Lila: Drückknopf GPIO4
+- Weiß: Ground
+- Grau: GPIO5
+- Schwarz: GPIO6
+
+
 ## Bedienung
 
 - Button 1: Geschwindigkeit hoeher
