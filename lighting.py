@@ -34,16 +34,18 @@ def build_dmx_frame(state: State, config: DmxConfig, started_at: float) -> list[
 def get_fixture_starts(state: State, config: DmxConfig) -> tuple[int, ...]:
     if state.zone == Zone.OUTSIDE:
         return config.outside_fixture_starts
-    return config.inside_fixture_starts
+    if config.inside_fixture_starts:
+        return config.inside_fixture_starts
+    return config.outside_fixture_starts
 
 
 def build_color_change_values(state: State, elapsed: float, fixture_count: int) -> list[FixtureValues]:
-    speed_factor = 0.015 + state.speed * 0.025
+    speed_factor = 0.008 + state.speed * 0.018
     values = []
     for index in range(fixture_count):
-        phase = index / max(1, fixture_count) * 0.10
+        phase = index / max(1, fixture_count)
         red, green, blue = color_wheel(elapsed * speed_factor + phase)
-        values.append(make_fixture(red, green, blue))
+        values.append(make_fixture(red, green, blue, master=255, strobe=0, mode=0, speed=0))
     return values
 
 
