@@ -19,5 +19,6 @@ class State:
     powered: bool = False
     mode: Mode = Mode.COLOR_CHANGE
     zone: Zone = Zone.OUTSIDE
+    dual: bool = False
     speed: int = 5
     flash: bool = False

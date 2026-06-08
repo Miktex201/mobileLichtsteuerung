@@ -35,13 +35,17 @@ Der Drehgeber wird gegen GND geschaltet. Im Programm sind interne Pull-Ups aktiv
 ## Bedienung
 
 - Drehgeber drehen: Geschwindigkeit hoeher/niedriger
-- Drehgeber druecken: Umschalten zwischen Buehne aussen und Buehne innen
-- Button 1: Geschwindigkeit hoeher als Backup
+- Drehgeber druecken: Umschalten zwischen Buehne aussen und Buehne innen; Dual wird dabei verlassen
+- Button 1: Dual Innen/Aussen an/aus
 - Button 2: Geschwindigkeit niedriger als Backup
 - Button 3: Farbwechselmodus
 - Button 4: Automatikmodus
 - Button 5: Licht an/aus
 - Button 6: Flash an/aus
+
+Wenn Dual aktiv ist, zeigt das Display `Buehne innen/aussen` und die Szenen laufen
+auf Innen und Aussen gemeinsam. Ohne Dual wirkt die Steuerung nur auf die aktuell
+gewaehlte Zone. Aussen ist DMX-Adresse 1 bis einschliesslich 40.
 
 ## Installation auf dem Raspberry Pi
 

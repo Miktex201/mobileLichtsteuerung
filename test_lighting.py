@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import time
+
 from config import DmxConfig
 from lighting import build_dmx_frame
 from state import Mode, State, Zone
@@ -11,7 +13,7 @@ def make_test_config() -> DmxConfig:
         port="/dev/null",
         outside_fixture_starts=(1, 9, 25, 33),
         outside_lightbar_starts=(17,),
-        inside_fixture_starts=(),
+        inside_fixture_starts=(41, 49),
         master_channel=1,
         red_channel=2,
         green_channel=3,
@@ -53,12 +55,41 @@ def test_auto_mode_uses_manual_rgb_without_strobe() -> None:
     assert frame[17 + 6 - 1] in (0, 255)
 
 
-def test_inside_without_addresses_falls_back_to_outside_fixtures() -> None:
+def test_inside_only_uses_inside_addresses() -> None:
     state = State(powered=True, mode=Mode.COLOR_CHANGE, zone=Zone.INSIDE, speed=5)
+    frame = build_dmx_frame(state, make_test_config(), started_at=0)
+
+    assert frame[0] == 0
+    assert frame[8] == 0
+    assert frame[16] == 0
+    assert frame[24] == 0
+    assert frame[32] == 0
+    assert frame[40] == 255
+    assert frame[48] == 255
+
+
+def test_dual_uses_inside_and_outside_addresses() -> None:
+    state = State(powered=True, mode=Mode.COLOR_CHANGE, zone=Zone.OUTSIDE, dual=True, speed=5)
     frame = build_dmx_frame(state, make_test_config(), started_at=0)
 
     assert frame[0] == 255
     assert frame[8] == 255
-    assert frame[22] == 255
+    assert any(frame[17 + offset - 1] > 0 for offset in (0, 1, 2))
+    assert frame[17 + 6 - 1] == 255
     assert frame[24] == 255
     assert frame[32] == 255
+    assert frame[40] == 255
+    assert frame[48] == 255
+
+
+def test_flash_uses_speed_timing() -> None:
+    state = State(powered=True, mode=Mode.AUTO, zone=Zone.OUTSIDE, speed=10, flash=True)
+
+    now = time.monotonic()
+    on_frame = build_dmx_frame(state, make_test_config(), started_at=now)
+    off_frame = build_dmx_frame(state, make_test_config(), started_at=now - 0.06)
+
+    assert on_frame[0] == 255
+    assert on_frame[16] == 255
+    assert off_frame[0] == 0
+    assert off_frame[16] == 0

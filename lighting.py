@@ -10,6 +10,7 @@ from state import Mode, State, Zone
 ParFixtureValues = tuple[int, int, int, int, int, int, int]
 LightbarValues = tuple[int, int, int, int, int, int, int]
 DmxElement = tuple[str, int]
+OUTSIDE_MAX_CHANNEL = 40
 
 
 def build_dmx_frame(state: State, config: DmxConfig, started_at: float) -> list[int]:
@@ -23,7 +24,7 @@ def build_dmx_frame(state: State, config: DmxConfig, started_at: float) -> list[
     elements = build_visual_order(par_starts, lightbar_starts)
 
     if state.flash:
-        apply_flash_scene(channels, par_starts, lightbar_starts)
+        apply_flash_scene(channels, state, elapsed, par_starts, lightbar_starts)
     elif state.mode == Mode.COLOR_CHANGE:
         apply_color_change_scene(channels, state, elapsed, elements)
     else:
@@ -33,11 +34,19 @@ def build_dmx_frame(state: State, config: DmxConfig, started_at: float) -> list[
 
 
 def get_scene_starts(state: State, config: DmxConfig) -> tuple[tuple[int, ...], tuple[int, ...]]:
+    outside_par = filter_start_channels(config.outside_fixture_starts, 1, OUTSIDE_MAX_CHANNEL)
+    outside_lightbars = filter_start_channels(config.outside_lightbar_starts, 1, OUTSIDE_MAX_CHANNEL)
+    inside_par = filter_start_channels(config.inside_fixture_starts, OUTSIDE_MAX_CHANNEL + 1, 512)
+
+    if state.dual:
+        return outside_par + inside_par, outside_lightbars
     if state.zone == Zone.OUTSIDE:
-        return config.outside_fixture_starts, config.outside_lightbar_starts
-    if config.inside_fixture_starts:
-        return config.inside_fixture_starts, ()
-    return config.outside_fixture_starts, config.outside_lightbar_starts
+        return outside_par, outside_lightbars
+    return inside_par, ()
+
+
+def filter_start_channels(starts: tuple[int, ...], minimum: int, maximum: int) -> tuple[int, ...]:
+    return tuple(start for start in starts if minimum <= start <= maximum)
 
 
 def build_visual_order(par_starts: tuple[int, ...], lightbar_starts: tuple[int, ...]) -> list[DmxElement]:
@@ -49,13 +58,23 @@ def build_visual_order(par_starts: tuple[int, ...], lightbar_starts: tuple[int, 
 
 def apply_flash_scene(
     channels: list[int],
+    state: State,
+    elapsed: float,
     par_starts: tuple[int, ...],
     lightbar_starts: tuple[int, ...],
 ) -> None:
+    if not flash_is_on(state.speed, elapsed):
+        return
+
     for start in par_starts:
         set_par_fixture(channels, start, make_fixture(255, 255, 255, strobe=255))
     for start in lightbar_starts:
         set_lightbar(channels, start, make_lightbar(255, 255, 255, flash=255))
+
+
+def flash_is_on(speed: int, elapsed: float) -> bool:
+    period = max(0.08, 0.9 - max(1, min(10, speed)) * 0.08)
+    return elapsed % period < period / 2
 
 
 def apply_color_change_scene(

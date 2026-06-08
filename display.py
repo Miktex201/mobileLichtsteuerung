@@ -28,7 +28,7 @@ class Display:
     def show(self, state: State) -> None:
         bar = self._speed_bar(state.speed)
         lines = [
-            state.zone.value,
+            self._zone_label(state),
             f"Status: {'AN' if state.powered else 'AUS'}",
             "Flash aktiv" if state.flash else f"Modus : {state.mode.value}",
             bar,
@@ -52,3 +52,9 @@ class Display:
     def _speed_bar(speed: int) -> str:
         filled = max(0, min(20, speed * 2))
         return "#" * filled + "-" * (20 - filled)
+
+    @staticmethod
+    def _zone_label(state: State) -> str:
+        if state.dual:
+            return "Buehne innen/aussen"
+        return state.zone.value

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 
 BUTTON_PINS = {
-    "speed_up": 25,      # Button 1, rot
+    "dual": 25,          # Button 1, rot
     "speed_down": 24,    # Button 2, lila
     "color_mode": 23,    # Button 3, blau
     "auto_mode": 22,     # Button 4, grau

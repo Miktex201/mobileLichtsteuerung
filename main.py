@@ -26,7 +26,7 @@ def main() -> int:
     print(f"DMX port: {config.dmx.port}")
     print(f"DMX aussen PAR fixtures: {config.dmx.outside_fixture_starts}")
     print(f"DMX aussen Lightbars: {config.dmx.outside_lightbar_starts}")
-    print(f"DMX innen fixtures: {config.dmx.inside_fixture_starts or 'Fallback auf aussen'}")
+    print(f"DMX innen fixtures: {config.dmx.inside_fixture_starts or 'keine'}")
     started_at = time.monotonic()
     running = True
 
@@ -39,6 +39,10 @@ def main() -> int:
 
     def speed_down() -> None:
         state.speed = max(1, state.speed - 1)
+        refresh_display()
+
+    def toggle_dual() -> None:
+        state.dual = not state.dual
         refresh_display()
 
     def color_mode() -> None:
@@ -62,6 +66,7 @@ def main() -> int:
         refresh_display()
 
     def toggle_zone() -> None:
+        state.dual = False
         state.zone = Zone.INSIDE if state.zone == Zone.OUTSIDE else Zone.OUTSIDE
         refresh_display()
 
@@ -73,7 +78,7 @@ def main() -> int:
     signal.signal(signal.SIGTERM, stop)
 
     buttons = [
-        bind_button(BUTTON_PINS["speed_up"], speed_up),
+        bind_button(BUTTON_PINS["dual"], toggle_dual),
         bind_button(BUTTON_PINS["speed_down"], speed_down),
         bind_button(BUTTON_PINS["color_mode"], color_mode),
         bind_button(BUTTON_PINS["auto_mode"], auto_mode),
