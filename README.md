@@ -111,7 +111,7 @@ Standard ist:
 
 ```env
 DMX_PORT=/dev/ttyUSB0
-DMX_BACKEND=serial
+DMX_BACKEND=enttec_pro
 ```
 
 Wenn beim Start `could not open port /dev/ttyUSB0` kommt, ist der Adapter nicht
@@ -128,19 +128,19 @@ Wenn z.B. `/dev/ttyUSB1` angezeigt wird, trage in `.env` ein:
 DMX_PORT=/dev/ttyUSB1
 ```
 
-Fuer deinen USB-zu-DMX-Seriell-Wandler nutzt das Programm den Raw-Serial-DMX-Treiber:
+Fuer das Eurolite USB-DMX512 PRO Cable Interface nutzt das Programm den PRO-Treiber:
+
+```env
+DMX_BACKEND=enttec_pro
+```
+
+Falls du spaeter doch wieder einen einfachen Raw-Serial/Open-DMX-Adapter nutzt:
 
 ```env
 DMX_BACKEND=serial
 ```
 
 `open_dmx` und `raw_serial` funktionieren als Alias ebenfalls.
-
-Falls du spaeter einen ENTTEC DMX USB Pro kompatiblen Adapter nutzt:
-
-```env
-DMX_BACKEND=enttec_pro
-```
 
 Zum Testen ohne echten DMX-Adapter:
 
