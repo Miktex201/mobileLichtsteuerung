@@ -117,10 +117,10 @@ def test_flash_is_continuous_and_speed_controlled() -> None:
     assert slow_frame[0] == 255
     assert slow_frame[16] == 255
     assert slow_frame[4] == 8
-    assert slow_frame[22] == 8
+    assert slow_frame[21] == 8
     assert fast_frame[0] == 255
     assert fast_frame[16] == 255
     assert fast_frame[4] == 255
-    assert fast_frame[22] == 255
+    assert fast_frame[21] == 255
     assert later_frame[0] == 255
     assert later_frame[16] == 255
