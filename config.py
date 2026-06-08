@@ -60,7 +60,7 @@ def load_config() -> AppConfig:
             port=os.getenv("DMX_PORT", "/dev/ttyUSB0"),
             outside_fixture_starts=read_dmx_channel_list("DMX_OUTSIDE_PAR_FIXTURES", "1,9,25,33"),
             outside_lightbar_starts=read_dmx_channel_list("DMX_OUTSIDE_LIGHTBARS", "17"),
-            inside_fixture_starts=read_dmx_channel_list("DMX_INSIDE_FIXTURES", ""),
+            inside_fixture_starts=read_dmx_channel_list("DMX_INSIDE_FIXTURES", "41,49,57,65"),
             master_channel=read_dmx_channel("DMX_CHANNEL_MASTER", 1),
             red_channel=read_dmx_channel("DMX_CHANNEL_RED", 2),
             green_channel=read_dmx_channel("DMX_CHANNEL_GREEN", 3),

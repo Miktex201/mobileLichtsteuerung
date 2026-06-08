@@ -42,7 +42,7 @@ def main() -> int:
         refresh_display()
 
     def toggle_dual() -> None:
-        state.dual = not state.dual
+        state.set_dual(not state.dual)
         refresh_display()
 
     def color_mode() -> None:
@@ -66,7 +66,7 @@ def main() -> int:
         refresh_display()
 
     def toggle_zone() -> None:
-        state.dual = False
+        state.set_dual(False)
         state.zone = Zone.INSIDE if state.zone == Zone.OUTSIDE else Zone.OUTSIDE
         refresh_display()
 

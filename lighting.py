@@ -4,7 +4,7 @@ import math
 import time
 
 from config import DmxConfig
-from state import Mode, State, Zone
+from state import Mode, State, ZoneState
 
 
 ParFixtureValues = tuple[int, int, int, int, int, int, int]
@@ -16,33 +16,38 @@ OUTSIDE_MAX_CHANNEL = 40
 def build_dmx_frame(state: State, config: DmxConfig, started_at: float) -> list[int]:
     channels = [0] * 512
 
-    if not state.powered:
-        return channels
-
     elapsed = time.monotonic() - started_at
-    par_starts, lightbar_starts = get_scene_starts(state, config)
-    elements = build_visual_order(par_starts, lightbar_starts)
-
-    if state.flash:
-        apply_flash_scene(channels, state, elapsed, par_starts, lightbar_starts)
-    elif state.mode == Mode.COLOR_CHANGE:
-        apply_color_change_scene(channels, state, elapsed, elements)
-    else:
-        apply_auto_scene(channels, state, elapsed, elements)
+    outside_par, outside_lightbars, inside_par = get_configured_starts(config)
+    render_zone(channels, state.outside, elapsed, outside_par, outside_lightbars)
+    render_zone(channels, state.inside, elapsed, inside_par, ())
 
     return channels
 
 
-def get_scene_starts(state: State, config: DmxConfig) -> tuple[tuple[int, ...], tuple[int, ...]]:
+def get_configured_starts(config: DmxConfig) -> tuple[tuple[int, ...], tuple[int, ...], tuple[int, ...]]:
     outside_par = filter_start_channels(config.outside_fixture_starts, 1, OUTSIDE_MAX_CHANNEL)
     outside_lightbars = filter_start_channels(config.outside_lightbar_starts, 1, OUTSIDE_MAX_CHANNEL)
     inside_par = filter_start_channels(config.inside_fixture_starts, OUTSIDE_MAX_CHANNEL + 1, 512)
+    return outside_par, outside_lightbars, inside_par
 
-    if state.dual:
-        return outside_par + inside_par, outside_lightbars
-    if state.zone == Zone.OUTSIDE:
-        return outside_par, outside_lightbars
-    return inside_par, ()
+
+def render_zone(
+    channels: list[int],
+    zone_state: ZoneState,
+    elapsed: float,
+    par_starts: tuple[int, ...],
+    lightbar_starts: tuple[int, ...],
+) -> None:
+    if not zone_state.powered:
+        return
+
+    elements = build_visual_order(par_starts, lightbar_starts)
+    if zone_state.flash:
+        apply_flash_scene(channels, zone_state, elapsed, par_starts, lightbar_starts)
+    elif zone_state.mode == Mode.COLOR_CHANGE:
+        apply_color_change_scene(channels, zone_state, elapsed, elements)
+    else:
+        apply_auto_scene(channels, zone_state, elapsed, elements)
 
 
 def filter_start_channels(starts: tuple[int, ...], minimum: int, maximum: int) -> tuple[int, ...]:
@@ -58,28 +63,27 @@ def build_visual_order(par_starts: tuple[int, ...], lightbar_starts: tuple[int, 
 
 def apply_flash_scene(
     channels: list[int],
-    state: State,
+    state: ZoneState,
     elapsed: float,
     par_starts: tuple[int, ...],
     lightbar_starts: tuple[int, ...],
 ) -> None:
-    if not flash_is_on(state.speed, elapsed):
-        return
+    flash_value = flash_speed_to_dmx(state.speed)
 
     for start in par_starts:
-        set_par_fixture(channels, start, make_fixture(255, 255, 255, strobe=255))
+        set_par_fixture(channels, start, make_fixture(255, 255, 255, strobe=flash_value))
     for start in lightbar_starts:
-        set_lightbar(channels, start, make_lightbar(255, 255, 255, flash=255))
+        set_lightbar(channels, start, make_lightbar(255, 255, 255, flash=flash_value))
 
 
-def flash_is_on(speed: int, elapsed: float) -> bool:
-    period = max(0.08, 0.9 - max(1, min(10, speed)) * 0.08)
-    return elapsed % period < period / 2
+def flash_speed_to_dmx(speed: int) -> int:
+    speed = max(1, min(10, int(speed)))
+    return round(8 + (speed - 1) * (247 / 9))
 
 
 def apply_color_change_scene(
     channels: list[int],
-    state: State,
+    state: ZoneState,
     elapsed: float,
     elements: list[DmxElement],
 ) -> None:
@@ -92,7 +96,7 @@ def apply_color_change_scene(
 
 def apply_auto_scene(
     channels: list[int],
-    state: State,
+    state: ZoneState,
     elapsed: float,
     elements: list[DmxElement],
 ) -> None:

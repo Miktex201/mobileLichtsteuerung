@@ -45,7 +45,12 @@ Der Drehgeber wird gegen GND geschaltet. Im Programm sind interne Pull-Ups aktiv
 
 Wenn Dual aktiv ist, zeigt das Display `Buehne innen/aussen` und die Szenen laufen
 auf Innen und Aussen gemeinsam. Ohne Dual wirkt die Steuerung nur auf die aktuell
-gewaehlte Zone. Aussen ist DMX-Adresse 1 bis einschliesslich 40.
+gewaehlte Zone. Die andere Zone behaelt ihren letzten Zustand und laeuft weiter,
+bis du sie separat aenderst oder ausschaltest. Aussen ist DMX-Adresse 1 bis
+einschliesslich 40.
+
+Flash ist ein durchgehender DMX-Strobe. Der Drehgeber veraendert dabei die
+Flash-Geschwindigkeit, ohne dass die Szene softwareseitig komplett aussetzt.
 
 ## Installation auf dem Raspberry Pi
 
@@ -199,8 +204,11 @@ In `.env` steht dafuer:
 ```env
 DMX_OUTSIDE_PAR_FIXTURES=1,9,25,33
 DMX_OUTSIDE_LIGHTBARS=17
-DMX_INSIDE_FIXTURES=
+DMX_INSIDE_FIXTURES=41,49,57,65
 ```
+
+Aussen wird im Programm auf DMX 1 bis 40 begrenzt. Innen nutzt die Startadressen
+ab DMX 41 aus `DMX_INSIDE_FIXTURES`.
 
 Die Kanalbelegung pro 7-Kanal-Lampe:
 
