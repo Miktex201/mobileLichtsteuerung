@@ -26,28 +26,65 @@ class LogDmxOutput(DmxOutput):
             self._last = now
 
 
-class EnttecProDmxOutput(DmxOutput):
-    """ENTTEC DMX USB Pro compatible packet protocol."""
+class PacketDmxOutput(DmxOutput):
+    """Packet based USB-DMX output with a steady background send loop."""
 
     START = 0x7E
     END = 0xE7
     SEND_DMX_PACKET = 6
 
-    def __init__(self, port: str) -> None:
+    def __init__(self, port: str, baudrate: int, fps: int = 60) -> None:
         import serial
 
-        self.serial = serial.Serial(port=port, baudrate=57600, timeout=0.05)
+        self.port = port
+        self.channels = 512
+        self.fps = max(1, min(60, int(fps)))
+        self.frame_time = 1 / self.fps
+        self.data = bytearray([0] * self.channels)
+        self.lock = threading.Lock()
+        self.running = True
+        self.serial = serial.Serial(port=port, baudrate=baudrate, timeout=0.05)
+        self.thread = threading.Thread(target=self._send_loop, daemon=True)
+        self.thread.start()
 
     def send(self, channels: list[int]) -> None:
-        data = bytes([0] + clamp_channels(channels, 512))
+        with self.lock:
+            self.data = bytearray(clamp_channels(channels, self.channels))
+
+    def close(self) -> None:
+        self.running = False
+        self.thread.join(timeout=1)
+        self.serial.close()
+
+    def _send_loop(self) -> None:
+        while self.running:
+            self.send_frame()
+            time.sleep(self.frame_time)
+
+    def send_frame(self) -> None:
+        with self.lock:
+            data = bytes([0]) + bytes(self.data)
+
         size = len(data)
         packet = bytes(
             [self.START, self.SEND_DMX_PACKET, size & 0xFF, (size >> 8) & 0xFF]
         ) + data + bytes([self.END])
         self.serial.write(packet)
+        self.serial.flush()
 
-    def close(self) -> None:
-        self.serial.close()
+
+class EnttecProDmxOutput(PacketDmxOutput):
+    """ENTTEC DMX USB Pro compatible packet protocol."""
+
+    def __init__(self, port: str) -> None:
+        super().__init__(port=port, baudrate=57600)
+
+
+class EuroliteProDmxOutput(PacketDmxOutput):
+    """Eurolite USB-DMX512 PRO Cable Interface packet protocol."""
+
+    def __init__(self, port: str) -> None:
+        super().__init__(port=port, baudrate=250000)
 
 
 class SerialDmxOutput(DmxOutput):
@@ -137,7 +174,9 @@ def make_dmx_output(config: DmxConfig) -> DmxOutput:
     try:
         if config.backend in ("open_dmx", "serial", "raw_serial"):
             return SerialDmxOutput(config.port)
-        if config.backend == "enttec_pro":
+        if config.backend in ("eurolite_pro", "eurolite", "usb_dmx512_pro", "enttec_pro"):
+            return EuroliteProDmxOutput(config.port)
+        if config.backend == "enttec_usb_pro":
             return EnttecProDmxOutput(config.port)
     except Exception as exc:
         print(f"DMX-Adapter nicht verfuegbar ({config.port}): {exc}")

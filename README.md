@@ -111,7 +111,7 @@ Standard ist:
 
 ```env
 DMX_PORT=/dev/ttyUSB0
-DMX_BACKEND=enttec_pro
+DMX_BACKEND=eurolite_pro
 ```
 
 Wenn beim Start `could not open port /dev/ttyUSB0` kommt, ist der Adapter nicht
@@ -128,11 +128,14 @@ Wenn z.B. `/dev/ttyUSB1` angezeigt wird, trage in `.env` ein:
 DMX_PORT=/dev/ttyUSB1
 ```
 
-Fuer das Eurolite USB-DMX512 PRO Cable Interface nutzt das Programm den PRO-Treiber:
+Fuer das Eurolite USB-DMX512 PRO Cable Interface nutzt das Programm den Eurolite-FT232R-Treiber:
 
 ```env
-DMX_BACKEND=enttec_pro
+DMX_BACKEND=eurolite_pro
 ```
+
+Wenn in einer alten `.env` noch `DMX_BACKEND=enttec_pro` steht, wird das aus
+Kompatibilitaetsgruenden ebenfalls als Eurolite-PRO-Treiber behandelt.
 
 Falls du spaeter doch wieder einen einfachen Raw-Serial/Open-DMX-Adapter nutzt:
 
@@ -231,7 +234,7 @@ ueber alle Aussen-Geraete. Die Geschwindigkeit kommt vom Drehgeber.
 - `display.py`: Ausgabe auf dem 20x4-I2C-LCD
 - `state.py`: aktueller Zustand wie Modus, Speed, Flash und An/Aus
 - `lighting.py`: erzeugt aus dem Zustand die 512 DMX-Kanalwerte
-- `dmx_output.py`: USB-DMX-Ausgabe, aktuell `serial`, `enttec_pro`, `open_dmx` oder `log`
+- `dmx_output.py`: USB-DMX-Ausgabe, aktuell `eurolite_pro`, `serial`, `open_dmx`, `enttec_usb_pro` oder `log`
 
 Wenn spaeter mehrere Scheinwerfer oder feste Szenen dazukommen, ist `lighting.py`
 der richtige Ort fuer die Logik. Wenn der konkrete USB-DMX-Wandler ein anderes

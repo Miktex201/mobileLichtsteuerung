@@ -56,7 +56,7 @@ def load_config() -> AppConfig:
             i2c_port=int(os.getenv("LCD_I2C_PORT", "1")),
         ),
         dmx=DmxConfig(
-            backend=os.getenv("DMX_BACKEND", "enttec_pro").lower(),
+            backend=os.getenv("DMX_BACKEND", "eurolite_pro").lower(),
             port=os.getenv("DMX_PORT", "/dev/ttyUSB0"),
             outside_fixture_starts=read_dmx_channel_list("DMX_OUTSIDE_PAR_FIXTURES", "1,9,25,33"),
             outside_lightbar_starts=read_dmx_channel_list("DMX_OUTSIDE_LIGHTBARS", "17"),
